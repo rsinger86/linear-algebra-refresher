@@ -80,3 +80,23 @@ class Vector(object):
             return radians 
 
         return math.degrees(radians)
+
+
+    def is_parallel(self, v):
+        if self.is_zero() or v.is_zero():
+            return True 
+
+        divide_results = []
+
+        for i, val in enumerate(v.coordinates):
+            divide_results.append( v.coordinates[i] / self.coordinates[i] )
+
+        return len(set(divide_results)) == 1
+
+    
+    def is_zero(self, tolerate=1e-10):
+        return self.find_magnitude() < tolerate
+
+
+    def is_orthogonal(self, v, tolerate=1e-10):
+        return abs(self.calc_dot_product(v)) < tolerate
