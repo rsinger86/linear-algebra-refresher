@@ -102,7 +102,12 @@ class Vector(object):
         return abs(self.calc_dot_product(v)) < tolerate
 
 
-    def get_projected_vector(self, basis_vector):
+    def get_orthogonal_to_vector(self, basis_vector):
+        projection = self.get_parallel_to_vector(basis_vector)
+        return self.minus(projection)
+
+
+    def get_parallel_to_vector(self, basis_vector):
         unit_vector = basis_vector.normalize()
         weight = self.calc_dot_product(unit_vector)
         return unit_vector.times_scalar(weight)
