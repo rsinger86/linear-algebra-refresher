@@ -60,7 +60,7 @@ class Vector(object):
         magnitude = self.find_magnitude() 
         inverted = (1/magnitude)
         normalized = [inverted*val for val in self.coordinates]
-        return normalized
+        return Vector(normalized)
 
 
     def calc_dot_product(self, v):
@@ -100,3 +100,9 @@ class Vector(object):
 
     def is_orthogonal(self, v, tolerate=1e-10):
         return abs(self.calc_dot_product(v)) < tolerate
+
+
+    def get_projected_vector(self, basis_vector):
+        unit_vector = basis_vector.normalize()
+        weight = self.calc_dot_product(unit_vector)
+        return unit_vector.times_scalar(weight)
