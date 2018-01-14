@@ -1,4 +1,8 @@
-import math 
+"""
+This module defines a class that represents vector as a mathematical object.
+"""
+
+import math
 
 
 class Vector(object):
@@ -57,39 +61,51 @@ class Vector(object):
 
 
     def normalize(self):
-        magnitude = self.find_magnitude() 
+        """
+            Returns vector's direction.
+        """
+        magnitude = self.find_magnitude()
         inverted = (1/magnitude)
         normalized = [inverted*val for val in self.coordinates]
         return Vector(normalized)
 
 
-    def calc_dot_product(self, v):
-        zipped = zip(self.coordinates, v.coordinates)
-        return sum([i*j for i,j in zipped])
+    def calc_dot_product(self, other_vector):
+        """
+            Returns inner product with another vector.
+        """
+        zipped = zip(self.coordinates, other_vector.coordinates)
+        return sum([i*j for i, j in zipped])
 
 
-    def calc_dot_product_angle(self, v, unit='radian'):
-        dot_product = self.calc_dot_product(v)
+    def calc_dot_product_angle(self, other_vector, unit='radian'):
+        """
+            Utilizes dot product to calculate angle with anotther vector.
+        """
+        dot_product = self.calc_dot_product(other_vector)
 
         radians = math.acos(
-            dot_product / 
-            (self.find_magnitude() * v.find_magnitude())
+            dot_product /
+            (self.find_magnitude() * other_vector.find_magnitude())
         )
 
         if unit == 'radian':
-            return radians 
+            return radians
 
         return math.degrees(radians)
 
 
-    def is_parallel(self, v):
-        if self.is_zero() or v.is_zero():
-            return True 
+    def is_parallel(self, other_vector):
+        """
+            Checks with this vector is parallel with anotther vector.
+        """
+        if self.is_zero() or other_vector.is_zero():
+            return True
 
         divide_results = []
 
-        for i, val in enumerate(v.coordinates):
-            divide_results.append( v.coordinates[i] / self.coordinates[i] )
+        for i, val in enumerate(other_vector.coordinates):
+            divide_results.append(other_vector.coordinates[i] / self.coordinates[i])
 
         return len(set(divide_results)) == 1
 
@@ -103,11 +119,36 @@ class Vector(object):
 
 
     def get_orthogonal_to_vector(self, basis_vector):
-        projection = self.get_parallel_to_vector(basis_vector)
-        return self.minus(projection)
+        """
+            Since this vector = parallel vector + orthogonal vector....
+        """
+        return self.minus(
+            self.get_parallel_to_vector(basis_vector)
+        )
 
 
     def get_parallel_to_vector(self, basis_vector):
+        """
+            Parallel vector, aka the projecion of this vector onto the basis vector,
+            is equal to the dot product of this vector and the normalized basis vector,
+            times scalar the normalized basis vector.
+        """
         unit_vector = basis_vector.normalize()
         weight = self.calc_dot_product(unit_vector)
         return unit_vector.times_scalar(weight)
+
+
+    def get_cross_product(self, other_vector):
+        """
+            Returns the cross product of vector with this vector.
+        """
+        v = self.coordinates
+        w = other_vector.coordinates 
+
+        return Vector([
+            (v[1] * w[2]) - (w[1] * v[2]),
+            -((v[0] * w[2]) - (w[0] * v[2])),
+            (v[0] * w[1]) - (w[0] * v[1])
+        ])
+
+
