@@ -1,18 +1,23 @@
-from geometric_objects import Line, Vector 
+from geometric_objects import Line, Vector, Plane
 
 
-# Ax + By = k
-# 4.046x + 2.836y = 1.21
-# 10.115x + 7.09y = 3.025
-line1 = Line(
-    normal_vector=Vector([4.046, 2.836]), 
-    constant_term=1.21
+# Vector([-0.412, 3.806, 0.728]) -3.46
+# Vector([1.03, -9.515, -1.82]) 8.65
+# Vector([2.611, 5.528, 0.283]) 4.6
+# Vector([7.715, 8.306, 5.342]) 3.76
+# Vector([-7.926, 8.625, -7.217]) -7.952
+# Vector([-2.642, 2.875, -2.404]) -2.443
+
+plane1 = Plane(
+    normal_vector=Vector([-7.926, 8.625, -7.212]), 
+    constant_term=-7.952
 )
 
-line2 = Line(
-    normal_vector=Vector([10.115, 7.09]), 
-    constant_term=3.025
+plane2 = Plane(
+    normal_vector=Vector([-2.642, 2.875, -2.404]), 
+    constant_term=-2.443
 )
 
-print('Intersection', line1.find_intersection_with(line2))
-print('Is equal', line1.is_equal_to(line2))
+
+print('is_equal_to', plane1.is_equal_to(plane2))
+print('is_parallel_to', plane1.is_parallel_to(plane2))

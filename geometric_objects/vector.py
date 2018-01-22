@@ -1,4 +1,8 @@
 import math 
+from decimal import Decimal, getcontext
+
+
+getcontext().prec = 30
 
 
 class Vector(object):
@@ -6,7 +10,7 @@ class Vector(object):
         try:
             if not coordinates:
                 raise ValueError
-            self.coordinates = tuple(coordinates)
+            self.coordinates = tuple([Decimal(c) for c in coordinates])
             self.dimension = len(coordinates)
 
         except ValueError:
@@ -37,7 +41,7 @@ class Vector(object):
         summed = []
 
         for i, val in enumerate(v.coordinates):
-            summed.append(self.coordinates[i]-val)
+            summed.append( self.coordinates[i] - val )
 
         return Vector(summed) 
 
@@ -53,14 +57,12 @@ class Vector(object):
 
     def find_magnitude(self):
         sum_of_squares = sum([val*val for val in self.coordinates])
-        return math.sqrt(sum_of_squares)
+        return Decimal(math.sqrt(sum_of_squares))
 
 
     def normalize(self):
         magnitude = self.find_magnitude() 
-        inverted = (1/magnitude)
-        normalized = [inverted*val for val in self.coordinates]
-        return Vector(normalized)
+        return self.times_scalar(Decimal('1')/magnitude)
 
 
     def calc_dot_product(self, v):
@@ -69,15 +71,12 @@ class Vector(object):
 
 
     def calc_dot_product_angle(self, v, unit='radian'):
-        dot_product = self.calc_dot_product(v)
-
-        radians = math.acos(
-            dot_product / 
-            (self.find_magnitude() * v.find_magnitude())
-        )
+        u1 = self.normalize()
+        u2 = v.normalize()
+        radians = math.acos(u1.calc_dot_product(u2))
 
         if unit == 'radian':
-            return radians 
+            return radians
 
         return math.degrees(radians)
 
@@ -85,13 +84,11 @@ class Vector(object):
     def is_parallel_to(self, v):
         if self.is_zero() or v.is_zero():
             return True 
-
-        divide_results = []
-
-        for i, val in enumerate(v.coordinates):
-            divide_results.append( v.coordinates[i] / self.coordinates[i] )
-
-        return len(set(divide_results)) == 1
+        
+        return (
+            self.calc_dot_product_angle(v) == 0 or 
+            self.calc_dot_product_angle(v) == math.pi
+        )
 
     
     def is_zero(self, tolerate=1e-10):
