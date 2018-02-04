@@ -20,12 +20,18 @@ class Vector(object):
             raise TypeError('The coordinates must be an iterable')
 
 
-    def __str__(self):
-        return 'Vector: {}'.format(self.coordinates)
+    def __len__(self):
+        return len(self.coordinates)
 
+    def __getitem__(self, i):
+        return self.coordinates[i]
+
+    def __str__(self):
+        return 'Vector: {}'.format([round(coord, 3)
+                                    for coord in self.coordinates])
 
     def __eq__(self, v):
-        return self.coordinates == v.coordinates 
+        return self.coordinates == v.coordinates
 
     
     def plus(self, v):
@@ -39,7 +45,7 @@ class Vector(object):
     
     def minus(self, v):
         summed = []
-
+    
         for i, val in enumerate(v.coordinates):
             summed.append( self.coordinates[i] - val )
 
@@ -61,19 +67,19 @@ class Vector(object):
 
 
     def normalize(self):
-        magnitude = self.find_magnitude() 
-        return self.times_scalar(Decimal('1')/magnitude)
+        try:
+            return self.times_scalar(Decimal('1.0') / self.find_magnitude())
+        except ZeroDivisionError:
+            raise Exception('Cannot normalize the zero vector')
 
 
-    def calc_dot_product(self, v):
-        zipped = zip(self.coordinates, v.coordinates)
-        return sum([i*j for i,j in zipped])
+    def calc_dot_product(self, other):
+        return sum(x * y for x, y in zip(self.coordinates, other.coordinates))
 
 
-    def calc_dot_product_angle(self, v, unit='radian'):
-        u1 = self.normalize()
-        u2 = v.normalize()
-        radians = math.acos(u1.calc_dot_product(u2))
+    def calc_dot_product_angle(self, other, unit='radian'):
+        dot_prod = round(self.normalize().calc_dot_product(other.normalize()), 3)
+        radians = math.acos(dot_prod)
 
         if unit == 'radian':
             return radians

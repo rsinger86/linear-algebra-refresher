@@ -1,7 +1,7 @@
-from decimal import Decimal, getcontext
+from decimal import Decimal
 from .vector import Vector
+from geometric_objects import MyDecimal
 
-getcontext().prec = 30
 
 
 class Plane(object):
@@ -18,9 +18,14 @@ class Plane(object):
 
         if not constant_term:
             constant_term = Decimal('0')
+
         self.constant_term = Decimal(constant_term)
 
         self.set_basepoint()
+
+
+    def __getitem__(self, i):
+        return self.normal_vector.coordinates[i]
 
 
     def set_basepoint(self):
@@ -66,7 +71,7 @@ class Plane(object):
 
             return output
 
-        n = self.normal_vector
+        n = self.normal_vector.coordinates
 
         try:
             initial_index = Plane.first_nonzero_index(n)
@@ -102,22 +107,28 @@ class Plane(object):
         return n1.is_parallel_to(n2)
 
 
+    def __eq__(self, other_plane=None):
+        return self.is_equal_to(other_plane=other_plane)
+
+
     def is_equal_to(self, other_plane=None):
         """
             Planes are equal if they are parallel
             and vector that connects their points 
             is orthogonal to their normal vectors.
         """
+        if self.normal_vector.is_zero():
+            if not other_plane.normal_vector.is_zero():
+                return False
+
+            diff = self.constant_term - other_plane.constant_term
+            return MyDecimal(diff).is_near_zero()
+
+        elif other_plane.normal_vector.is_zero():
+            return False
+
         if not self.is_parallel_to(other_plane):
-            return False 
+            return False
 
-        basepoint1 = self.basepoint
-        basepoint2 = other_plane.basepoint
-        connecting_vector = basepoint1.minus(basepoint2)
-        return connecting_vector.is_orthogonal_to(self.normal_vector)
-
-
-
-class MyDecimal(Decimal):
-    def is_near_zero(self, eps=1e-10):
-        return abs(self) < eps
+        basepoint_difference = self.basepoint.minus(other_plane.basepoint)
+        return basepoint_difference.is_orthogonal_to(self.normal_vector)
