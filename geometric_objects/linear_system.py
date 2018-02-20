@@ -238,6 +238,35 @@ class LinearSystem(object):
             return str(e)
 
 
+    def get_parametrization(self):
+        basepoint_vector = self.get_parametrization_basepoint()
+        direction_vectors = self.get_parametrization_direction_vectors()
+        return basepoint_vector 
+
+    def get_parametrization_direction_vectors(self):
+        rref = self.compute_rref()
+        direction_vectors = []
+        non_zeroindices = rref.indices_of_first_nonzero_terms_in_each_row()
+        free_vars = set([0,1,2]) - set(non_zeroindices)
+        num_free_vars = len(free_vars)
+
+        for free_var in free_vars:
+            print('hi')
+
+
+
+    def get_parametrization_basepoint(self):
+        rref = self.compute_rref()
+        coordinates = [0] * 3
+        nonzero_indices = rref.indices_of_first_nonzero_terms_in_each_row()
+
+        for i, non_zeroindex in enumerate(nonzero_indices):
+            coordinates[non_zeroindex] = rref.planes[i].constant_term
+        
+        return Vector(coordinates)
+
+
+
 class Parametrization(object):
 
     BASEPT_AND_DIR_VECTORS_MUST_BE_IN_SAME_DIM = (
